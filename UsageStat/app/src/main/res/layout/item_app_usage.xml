@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
+    android:padding="12dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/appIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:contentDescription="App Icon" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
+            <TextView
+                android:id="@+id/appName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                 />
+            <!--android:textColor="?attr/colorOnPrimary"-->
+
+            <TextView
+                android:id="@+id/timeUsed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                 />
+            <!--android:textColor="?attr/colorOnSecondary"-->
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="100"
+                android:progress="0"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/moreThanYesterdayText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="More than yesterday!"
+                android:textSize="12sp"
+                android:textColor="@color/teal_200"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <NumberPicker
+                    android:id="@+id/numberPicker"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/setLimitButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set"
+
+
+                    android:layout_marginStart="8dp" />
+                <!--android:backgroundTint="?attr/colorSecondary"-->
+                <!--android:textColor="?attr/colorOnSecondary"-->
+
+                <Switch
+                    android:id="@+id/toggleSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
