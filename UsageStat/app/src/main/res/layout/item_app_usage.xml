@@ -1,22 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView android:layout_width="match_parent"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="8dp"
-    android:padding="12dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="#1E1E1E"
+    app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp">
+        android:padding="12dp">
 
+        <!-- App Icon -->
         <ImageView
             android:id="@+id/appIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:contentDescription="App Icon" />
+            android:layout_gravity="center_vertical"
+            app:srcCompat="@drawable/ic_launcher_foreground"
+            app:tint="@null"
+            android:scaleType="centerCrop"
+            android:background="@drawable/circle_background"
+            android:clipToOutline="true"
+            tools:targetApi="31" />
 
+        <!-- Nội dung -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -24,69 +37,104 @@
             android:orientation="vertical"
             android:layout_marginStart="12dp">
 
+            <!-- Tên app -->
             <TextView
                 android:id="@+id/appName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Facebook"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                 />
-            <!--android:textColor="?attr/colorOnPrimary"-->
+                android:textColor="#FFFFFF" />
 
-            <TextView
-                android:id="@+id/timeUsed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                 />
-            <!--android:textColor="?attr/colorOnSecondary"-->
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:max="100"
-                android:progress="0"
-                android:layout_marginTop="4dp" />
-
-            <TextView
-                android:id="@+id/moreThanYesterdayText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="More than yesterday!"
-                android:textSize="12sp"
-                android:textColor="@color/teal_200"
-                android:visibility="gone" />
-
+            <!-- Thời gian + phần trăm -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="2dp">
 
-                <NumberPicker
-                    android:id="@+id/numberPicker"
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/setLimitButton"
+                <TextView
+                    android:id="@+id/timeUsed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Set"
+                    android:text="10m 36s"
+                    android:textSize="14sp"
+                    android:textColor="#B3B3B3" />
 
-
-                    android:layout_marginStart="8dp" />
-                <!--android:backgroundTint="?attr/colorSecondary"-->
-                <!--android:textColor="?attr/colorOnSecondary"-->
-
-                <Switch
-                    android:id="@+id/toggleSwitch"
+                <TextView
+                    android:id="@+id/percentage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text=" +42.8%"
+                    android:textSize="12sp"
+                    android:textColor="#4CAF50"
                     android:layout_marginStart="8dp" />
+
             </LinearLayout>
+
+            <!-- More than yesterday -->
+            <LinearLayout
+                android:id="@+id/moreThanYesterdayContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:layout_marginTop="4dp">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_arrow_up"
+                    app:tint="#4CAF50"
+                    android:layout_gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/moreThanYesterdayText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="36s more than yesterday"
+                    android:textSize="12sp"
+                    android:textColor="#4CAF50"
+                    android:layout_marginStart="4dp" />
+
+            </LinearLayout>
+
+            <!-- Progress bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_marginTop="8dp"
+                android:max="100"
+                android:progress="42"
+                android:progressTint="#4CAF50"
+                android:progressBackgroundTint="#333333"
+                android:indeterminate="false"
+                android:scaleY="1"
+                app:cornerRadius="4dp" />
+
         </LinearLayout>
+
+        <!-- Add Limit Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddLimit"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textSize="18sp"
+            android:textColor="#2196F3"
+            app:strokeColor="#2196F3"
+            app:strokeWidth="1dp"
+            app:cornerRadius="8dp"
+            android:layout_gravity="center_vertical"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="36dp"
+            android:minHeight="36dp" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
