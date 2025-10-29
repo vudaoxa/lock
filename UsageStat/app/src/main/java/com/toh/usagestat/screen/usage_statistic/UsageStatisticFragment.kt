@@ -66,17 +66,15 @@ class UsageStatisticFragment : Fragment() {
                 if (!recyclerView.canScrollHorizontally(-1) && dx < 0) {
                     viewModel.loadPreviousWeek()
                 }
-                if (!recyclerView.canScrollHorizontally(1) && dx > 0) {
-                    viewModel.loadNextWeek()
-                }
+                //if (!recyclerView.canScrollHorizontally(1) && dx > 0) {
+                //    viewModel.loadNextWeek()
+                //}
             }
         })
     }
 
     private fun setupRecyclerView() {
         adapter = AppUsageAdapter { packageName ->
-            //(activity as? MainActivity)?.openAppDetail(packageName)
-            // TODO:
             findNavController().navigate(
                 R.id.action_usageStatistic_to_appDetail,
                 bundleOf("packageName" to packageName)

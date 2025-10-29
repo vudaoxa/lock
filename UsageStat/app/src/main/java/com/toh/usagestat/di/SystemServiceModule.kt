@@ -12,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object SystemServiceModule {
-
     @Provides
     fun provideUsageStatsManager(@ApplicationContext context: Context): UsageStatsManager {
         return context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
