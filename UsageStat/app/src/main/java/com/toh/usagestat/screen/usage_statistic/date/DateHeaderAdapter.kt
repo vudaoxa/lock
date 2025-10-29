@@ -35,6 +35,7 @@ class DateHeaderAdapter constructor(
     class DiffCallback : DiffUtil.ItemCallback<DateHeaderItem>() {
         override fun areItemsTheSame(old: DateHeaderItem, new: DateHeaderItem) =
             old.date.timeInMillis == new.date.timeInMillis
+
         override fun areContentsTheSame(old: DateHeaderItem, new: DateHeaderItem) = old == new
     }
 }

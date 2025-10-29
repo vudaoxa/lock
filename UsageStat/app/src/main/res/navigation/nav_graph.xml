@@ -1,10 +1,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/usageStatistic">
 
     <fragment
         android:id="@+id/usageStatistic"
-        android:name="com.toh.usagestat.screen.usage_statistic.UsageStatisticFragment">
+        android:name="com.toh.usagestat.screen.usage_statistic.UsageStatisticFragment"
+        android:label="Usage Statistic">
         <action
             android:id="@+id/action_usageStatistic_to_appDetail"
             app:destination="@id/appDetail" />
@@ -12,7 +14,10 @@
 
     <fragment
         android:id="@+id/appDetail"
-        android:name="com.example.applock2.screen.app_detail.AppDetailFragment">
-        <argument android:name="packageName" app:argType="string" />
+        android:name="com.toh.usagestat.screen.app_detail.AppDetailFragment"
+        android:label="App Detail">
+        <argument
+            android:name="packageName"
+            app:argType="string" />
     </fragment>
 </navigation>

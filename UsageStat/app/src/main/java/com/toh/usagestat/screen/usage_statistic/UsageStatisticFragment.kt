@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.toh.usagestat.R
 import com.toh.usagestat.databinding.FragmentUsageStatisticBinding
 import com.toh.usagestat.screen.usage_statistic.adapter.AppUsageAdapter
 import com.toh.usagestat.screen.usage_statistic.date.DateHeaderAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Calendar
 
 @AndroidEntryPoint
 class UsageStatisticFragment : Fragment() {
@@ -75,10 +77,10 @@ class UsageStatisticFragment : Fragment() {
         adapter = AppUsageAdapter { packageName ->
             //(activity as? MainActivity)?.openAppDetail(packageName)
             // TODO:
-            //findNavController().navigate(
-            //    R.id.action_usageStatistic_to_appDetail,
-            //    bundleOf("packageName" to packageName)
-            //)
+            findNavController().navigate(
+                R.id.action_usageStatistic_to_appDetail,
+                bundleOf("packageName" to packageName)
+            )
         }
         binding.rvApps.apply {
             layoutManager = LinearLayoutManager(context)

@@ -83,8 +83,10 @@ class UsageStatisticViewModel @Inject constructor(
 
     private fun loadDataForDate(date: Calendar) {
         viewModelScope.launch {
-            val start = date.apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0) }.timeInMillis
-            val end = date.apply { set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59) }.timeInMillis
+            val start =
+                date.apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0) }.timeInMillis
+            val end =
+                date.apply { set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59) }.timeInMillis
 
             val yesterday = date.clone() as Calendar
             yesterday.add(Calendar.DAY_OF_YEAR, -1)
@@ -92,7 +94,8 @@ class UsageStatisticViewModel @Inject constructor(
             val yesterdayEnd = yesterday.apply { set(Calendar.HOUR_OF_DAY, 23) }.timeInMillis
 
             val statsToday = usageStatsManager.queryUsageStats(INTERVAL_DAILY, start, end)
-            val statsYesterday = usageStatsManager.queryUsageStats(INTERVAL_DAILY, yesterdayStart, yesterdayEnd)
+            val statsYesterday =
+                usageStatsManager.queryUsageStats(INTERVAL_DAILY, yesterdayStart, yesterdayEnd)
             val yesterdayMap = statsYesterday.associateBy { it.packageName }
             val totalToday = statsToday.sumOf { it.totalTimeInForeground }
             val totalYesterday = statsYesterday.sumOf { it.totalTimeInForeground }
@@ -114,7 +117,9 @@ class UsageStatisticViewModel @Inject constructor(
                         moreThanYesterday = diff > 0,
                         diffWithYesterday = diff.coerceAtLeast(0L) // Chỉ hiện nếu tăng
                     )
-                } catch (e: Exception) { null }
+                } catch (e: Exception) {
+                    null
+                }
             }.sortedByDescending { it.timeUsed }
 
             val total = appList.sumOf { it.timeUsed }

@@ -1,23 +1,24 @@
 [versions]
+kotlin = "1.9.25"
+ksp = "1.9.25-1.0.20"
 agp = "8.13.0"
-kotlin = "2.0.21"
-coreKtx = "1.10.1"
-material = "1.12.0"
+hilt = "2.55"
+
+coreKtx = "1.17.0"
+material = "1.13.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-lifecycleRuntimeKtx = "2.6.1"
-activityCompose = "1.8.0"
-composeBom = "2024.09.00"
-ksp = "2.0.21-1.0.26"  # bản KSP tương ứng Kotlin
-hilt = "2.52"
+lifecycleRuntimeKtx = "2.9.4"
+activityCompose = "1.11.0"
+composeBom = "2025.10.01"
 
 #grk
 androidx-core = "1.13.1"
 androidx-appcompat = "1.7.0"
-androidx-recyclerview = "1.3.2"
+androidx-recyclerview = "1.4.0"
 androidx-cardview = "1.0.0"
-androidx-lifecycle = "2.8.4"
+androidx-lifecycle = "2.9.4"
 navigationFragmentKtx = "2.9.5"
 navigationUiKtx = "2.9.5"
 
@@ -49,8 +50,8 @@ androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-lived
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 
-androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.3" }
-androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version = "1.9.2" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version = "1.8.9" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version = "1.11.0" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 

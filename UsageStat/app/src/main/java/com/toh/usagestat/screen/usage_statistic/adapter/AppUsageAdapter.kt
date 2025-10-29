@@ -15,14 +15,16 @@ class AppUsageAdapter(
     private val onAppClick: (String) -> Unit
 ) : ListAdapter<AppUsageData, AppUsageAdapter.ViewHolder>(DiffCallback()) {
 
-    class ViewHolder(private val binding: ItemAppUsageBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: ItemAppUsageBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(item: AppUsageData, onClick: (String) -> Unit) {
             binding.appIcon.setImageDrawable(item.appIcon)
             binding.appName.text = item.appName
             binding.timeUsed.text = formatDuration(item.timeUsed)
             binding.percentage.text = "${item.percentage.toInt()}%"
             binding.moreThanYesterdayContainer.visibility = if (item.moreThanYesterday) {
-                binding.moreThanYesterdayText.text = "${formatDuration(item.diffWithYesterday)} more than yesterday"
+                binding.moreThanYesterdayText.text =
+                    "${formatDuration(item.diffWithYesterday)} more than yesterday"
                 View.VISIBLE
             } else View.GONE
             binding.root.setOnClickListener { onClick(item.packageName) }
@@ -30,7 +32,8 @@ class AppUsageAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemAppUsageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemAppUsageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
@@ -41,6 +44,7 @@ class AppUsageAdapter(
     class DiffCallback : DiffUtil.ItemCallback<AppUsageData>() {
         override fun areItemsTheSame(old: AppUsageData, new: AppUsageData) =
             old.packageName == new.packageName
+
         override fun areContentsTheSame(old: AppUsageData, new: AppUsageData) = old == new
     }
 }

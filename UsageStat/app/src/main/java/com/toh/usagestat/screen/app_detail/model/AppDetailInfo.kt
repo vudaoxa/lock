@@ -1,4 +1,4 @@
-package com.toh.usagestat.screen.app_detail
+package com.toh.usagestat.screen.app_detail.model
 
 data class AppDetailInfo(
     val todayUsage: Long = 0L,

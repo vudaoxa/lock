@@ -1,54 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<androidx.fragment.app.FragmentContainerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_host_fragment"
+    android:name="androidx.navigation.fragment.NavHostFragment"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="AppLock2 Usage Statistics"
-        android:textSize="24sp"
-        android:textStyle="bold"
-
-        android:layout_marginBottom="12dp" />
-    <!--android:textColor="?attr/colorOnPrimary"-->
-
-    <TextView
-        android:id="@+id/dateText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Date: "
-        android:textSize="18sp"
-
-        android:layout_marginBottom="8dp" />
-    <!--android:textColor="?attr/colorOnSecondary"-->
-
-    <TextView
-        android:id="@+id/totalTimeText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Total time: "
-        android:textSize="18sp"
-
-        android:layout_marginBottom="16dp" />
-    <!--android:textColor="?attr/colorOnSecondary"-->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp" />
-
-    <LinearLayout
-        android:id="@+id/adContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="8dp">
-    </LinearLayout>
-</LinearLayout>
+    app:defaultNavHost="true"
+    app:navGraph="@navigation/nav_graph" />
