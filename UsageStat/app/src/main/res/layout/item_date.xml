@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="8dp">
-
-    <!-- Nền tròn khi chọn -->
-    <View
-        android:id="@+id/selectedBackground"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/circle_blue"
-        android:visibility="gone"
-        tools:visibility="visible" />
 
     <!-- Số ngày -->
     <TextView
@@ -21,9 +11,9 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:gravity="center"
+        android:background="@drawable/circle_blue_selector"
         android:text="13"
-        android:textColor="#B3B3B3"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textColor="@color/text_color_selector"
+        android:textSize="14sp"/>
 
 </FrameLayout>

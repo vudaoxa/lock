@@ -11,8 +11,15 @@ import com.toh.usagestat.screen.usage_statistic.adapter.AppUsageData
 import com.toh.usagestat.screen.usage_statistic.date.DateHeaderItem
 import com.toh.usagestat.screen.usage_statistic.model.UsageStatisticUiState
 import com.toh.usagestat.util.formatDuration
+import com.toh.usagestat.util.getOffsetDate
+import com.toh.usagestat.util.isAfter
+import com.toh.usagestat.util.isBefore
+import com.toh.usagestat.util.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import javax.inject.Inject
@@ -31,16 +38,33 @@ class UsageStatisticViewModel @Inject constructor(
 
     private var currentStartWeek = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, -6) }
     private var selectedDate = Calendar.getInstance()
+    //var selectedDate = Calendar.getInstance()
+    //    private set
 
     init {
         loadInitialWeek()
+        //loadInitialDate()
+    }
+
+    //fun smoothScrollToDate(): Int {
+    //    return dateList.value.map { it.date }.indexOf(selectedDate)
+    //}
+
+    fun loadInitialDate() {
+        _uiState.value = UsageStatisticUiState(
+            //date = _dateFormat.format(Calendar.getInstance().time),
+            date = _dateFormat.format(selectedDate.time),
+        )
+    }
+
+    fun loadInitialData() {
         loadDataForDate(selectedDate)
     }
 
     fun selectDate(date: Calendar) {
         selectedDate = date
-        loadDataForDate(date)
         updateDateSelection()
+        loadDataForDate(date)
     }
 
     fun loadPreviousWeek() {
@@ -51,6 +75,24 @@ class UsageStatisticViewModel @Inject constructor(
     fun loadNextWeek() {
         currentStartWeek.add(Calendar.DAY_OF_YEAR, 7)
         loadWeek(currentStartWeek, addToFront = false)
+    }
+
+    fun selectDateOffset(offset: Int) {
+        if ((offset < 0 && selectedDate.isAfter(_dateList.value.first().date))
+            || offset > 0 && selectedDate.isBefore(_dateList.value.last().date)
+        ) {
+            selectDate(selectedDate.getOffsetDate(offset))
+        }
+    }
+
+    fun selectLastDate(): Boolean {
+        selectDate(_dateList.value.last().date)
+        return true
+    }
+
+    fun selectFirstDate(): Boolean {
+        selectDate(_dateList.value.first().date)
+        return true
     }
 
     private fun loadInitialWeek() {
@@ -78,11 +120,14 @@ class UsageStatisticViewModel @Inject constructor(
             // Giữ 35 ngày (5 tuần)
             val trimmed = if (current.size > 35) current.takeLast(35) else current
             _dateList.value = trimmed
+            //_dateList.value = current
         }
     }
 
+    private var seekJob: Job? = null
     private fun loadDataForDate(date: Calendar) {
-        viewModelScope.launch {
+        seekJob?.cancel()
+        seekJob = viewModelScope.launch(Dispatchers.IO) {
             val start =
                 date.apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0) }.timeInMillis
             val end =
@@ -125,25 +170,24 @@ class UsageStatisticViewModel @Inject constructor(
             val total = appList.sumOf { it.timeUsed }
             val diff = totalToday - totalYesterday
 
-            _uiState.value = UsageStatisticUiState(
-                date = SimpleDateFormat("MMM dd, yyyy").format(date.time),
-                totalTime = formatDuration(totalToday),
-                compareText = if (diff > 0) "+${formatDuration(diff)} more than yesterday"
-                else "${formatDuration(-diff)} less than yesterday",
-                appList = appList.map {
-                    it.copy(percentage = if (total > 0) (it.timeUsed * 100f / total) else 0f)
-                }
-            )
+            withContext(Dispatchers.Main) {
+                _uiState.value = UsageStatisticUiState(
+                    date = _dateFormat.format(date.time),
+                    totalTime = formatDuration(totalToday),
+                    compareText = if (diff > 0) "+${formatDuration(diff)} more than yesterday"
+                    else "${formatDuration(-diff)} less than yesterday",
+                    appList = appList.map {
+                        it.copy(percentage = if (total > 0) (it.timeUsed * 100f / total) else 0f)
+                    }
+                )
+            }
         }
     }
 
+    private val _dateFormat = SimpleDateFormat("MMM dd, yyyy")
     private fun updateDateSelection() {
         _dateList.value = _dateList.value?.map {
             it.copy(isSelected = isSameDay(it.date, selectedDate))
         }
     }
-
-    private fun isSameDay(cal1: Calendar, cal2: Calendar) =
-        cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
 }

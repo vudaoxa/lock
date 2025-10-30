@@ -20,19 +20,7 @@ class DateHeaderAdapter constructor(
     class ViewHolder(private val binding: ItemDateBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: DateHeaderItem, onClick: (Calendar) -> Unit) {
             binding.tvDay.text = item.date.get(Calendar.DAY_OF_MONTH).toString()
-            binding.tvDay.background = null
-
-            // Cập nhật UI khi chọn
-            // this solution is temporary, use color selector instead
-            // UI is not responsive, -->
-            if (item.isSelected) {
-                binding.tvDay.setTextColor(Color.WHITE)
-                binding.selectedBackground.visibility = View.VISIBLE
-            } else {
-                binding.tvDay.setTextColor("#B3B3B3".toColorInt())
-                binding.selectedBackground.visibility = View.GONE
-            }
-
+            binding.tvDay.isSelected = item.isSelected
             binding.root.setOnClickListener { onClick(item.date) }
         }
     }

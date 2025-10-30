@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="16dp"
-    android:background="#121212"
     android:orientation="vertical">
+    <!--android:background="#121212"-->
 
     <!-- HEADER: MŨI TÊN + NGÀY HIỆN TẠI + MŨI TÊN -->
     <LinearLayout
@@ -21,6 +22,7 @@
             android:id="@+id/btnPrevWeek"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_marginHorizontal="5dp"
             android:layout_marginEnd="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -34,6 +36,7 @@
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
             android:gravity="center"
             android:text="Oct 13, 2025"
             android:textColor="#FFFFFF"
@@ -45,6 +48,7 @@
             android:id="@+id/btnNextWeek"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_marginHorizontal="5dp"
             android:layout_marginStart="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
@@ -59,7 +63,48 @@
         android:id="@+id/rvDateHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" />
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="7"
+        tools:listitem="@layout/item_date" />
+
+    <!-- Sau RecyclerView DateHeader -->
+    <LinearLayout
+        android:id="@+id/emptyStateContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_no_data"
+            app:tint="#666666" />
+
+        <TextView
+            android:id="@+id/tvEmptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Grant permission to see usage stats"
+            tools:text="No usage data yet. Try using some apps!"
+            android:textColor="#B3B3B3"
+            android:textSize="16sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGrantPermission"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Open Settings"
+            android:textColor="#2196F3"
+            app:strokeColor="#2196F3" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvTotalTime"
@@ -67,6 +112,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginTop="16dp"
+        android:background="@null"
         android:text="Total usage: 1h 42m"
         android:textColor="#FFFFFF" />
 
@@ -75,6 +121,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:background="@null"
         android:text="+36m more than yesterday"
         android:textColor="#4CAF50" />
 
@@ -82,6 +129,7 @@
         android:id="@+id/rvApps"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 </LinearLayout>
