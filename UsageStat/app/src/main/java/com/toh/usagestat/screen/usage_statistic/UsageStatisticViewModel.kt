@@ -1,7 +1,10 @@
 package com.toh.usagestat.screen.usage_statistic
 
+import android.app.usage.UsageEvents
 import android.app.usage.UsageStatsManager
 import android.app.usage.UsageStatsManager.INTERVAL_DAILY
+import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,10 +21,13 @@ import com.toh.usagestat.util.isSameDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -59,6 +65,7 @@ class UsageStatisticViewModel @Inject constructor(
 
     fun loadInitialData() {
         loadDataForDate(selectedDate)
+        startRealTimeTracking() // BẮT ĐẦU THEO DÕI
     }
 
     fun selectDate(date: Calendar) {
@@ -125,61 +132,59 @@ class UsageStatisticViewModel @Inject constructor(
     }
 
     private var seekJob: Job? = null
+
+    // Hàm lọc package hệ thống
+    private fun isSystemPackage(packageName: String): Boolean {
+        return try {
+            val appInfo = packageManager.getApplicationInfo(packageName, 0)
+            (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        } catch (e: Exception) {
+            true // Nếu không lấy được → coi là hệ thống
+        }
+    }
+
     private fun loadDataForDate(date: Calendar) {
-        seekJob?.cancel()
-        seekJob = viewModelScope.launch(Dispatchers.IO) {
-            val start =
-                date.apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0) }.timeInMillis
-            val end =
-                date.apply { set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59) }.timeInMillis
+        viewModelScope.launch(Dispatchers.IO) {
+            val start = date.apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0) }.timeInMillis
+            val end = date.apply { set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59) }.timeInMillis
 
-            val yesterday = date.clone() as Calendar
-            yesterday.add(Calendar.DAY_OF_YEAR, -1)
-            val yesterdayStart = yesterday.apply { set(Calendar.HOUR_OF_DAY, 0) }.timeInMillis
-            val yesterdayEnd = yesterday.apply { set(Calendar.HOUR_OF_DAY, 23) }.timeInMillis
+            // DÙNG queryEvents ĐỂ LẤY TẤT CẢ SỰ KIỆN
+            val events = usageStatsManager.queryEvents(start, end)
+            val event = UsageEvents.Event()
 
-            val statsToday = usageStatsManager.queryUsageStats(INTERVAL_DAILY, start, end)
-            val statsYesterday =
-                usageStatsManager.queryUsageStats(INTERVAL_DAILY, yesterdayStart, yesterdayEnd)
-            val yesterdayMap = statsYesterday.associateBy { it.packageName }
-            val totalToday = statsToday.sumOf { it.totalTimeInForeground }
-            val totalYesterday = statsYesterday.sumOf { it.totalTimeInForeground }
+            val appUsageMap = mutableMapOf<String, Long>()
 
-            val appList = statsToday.mapNotNull { stat ->
-                try {
-                    val appInfo = packageManager.getApplicationInfo(stat.packageName, 0)
-                    val name = packageManager.getApplicationLabel(appInfo).toString()
-                    val icon = packageManager.getApplicationIcon(appInfo)
+            while (events.hasNextEvent()) {
+                events.getNextEvent(event)
+                if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED ||
+                    event.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
 
-                    val yesterdayTime = yesterdayMap[stat.packageName]?.totalTimeInForeground ?: 0L
-                    val diff = stat.totalTimeInForeground - yesterdayTime
+                    val packageName = event.packageName
+                    val time = event.timeStamp
 
-                    AppUsageData(
-                        packageName = stat.packageName,
-                        appName = name,
-                        appIcon = icon,
-                        timeUsed = stat.totalTimeInForeground,
-                        moreThanYesterday = diff > 0,
-                        diffWithYesterday = diff.coerceAtLeast(0L) // Chỉ hiện nếu tăng
-                    )
-                } catch (e: Exception) {
-                    null
-                }
-            }.sortedByDescending { it.timeUsed }
-
-            val total = appList.sumOf { it.timeUsed }
-            val diff = totalToday - totalYesterday
-
-            withContext(Dispatchers.Main) {
-                _uiState.value = UsageStatisticUiState(
-                    date = _dateFormat.format(date.time),
-                    totalTime = formatDuration(totalToday),
-                    compareText = if (diff > 0) "+${formatDuration(diff)} more than yesterday"
-                    else "${formatDuration(-diff)} less than yesterday",
-                    appList = appList.map {
-                        it.copy(percentage = if (total > 0) (it.timeUsed * 100f / total) else 0f)
+                    if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
+                        appUsageMap[packageName] = time // Bắt đầu
+                    } else if (event.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {
+                        val startTime = appUsageMap[packageName] ?: continue
+                        val duration = time - startTime
+                        appUsageMap[packageName] = 0L // Reset
+                        _tempUsageMap[packageName] = (_tempUsageMap[packageName] ?: 0L) + duration
                     }
-                )
+                }
+            }
+
+            // Xử lý app vẫn đang mở (chưa paused)
+            val now = System.currentTimeMillis()
+            for ((pkg, startTime) in appUsageMap) {
+                if (startTime > 0) {
+                    val duration = now - startTime
+                    _tempUsageMap[pkg] = (_tempUsageMap[pkg] ?: 0L) + duration
+                }
+            }
+
+            // Chuyển sang UI thread để update
+            withContext(Dispatchers.Main) {
+                updateAppListFromTempMap()
             }
         }
     }
@@ -190,4 +195,100 @@ class UsageStatisticViewModel @Inject constructor(
             it.copy(isSelected = isSameDay(it.date, selectedDate))
         }
     }
+
+    //update
+    /*
+    * danh sách các apps a đang thấy có các vấn đề sau
+    - Liệt kê cả các package không phải app --- ok
+    - Không thấy liệt kê các apps ko phải apps hệ thống ---
+    * */
+
+    //private var seekJob: Job? = null
+    private val _tempUsageMap = mutableMapOf<String, Long>()
+
+    // 1. seekJob: Cập nhật real-time cho ngày hiện tại
+    private fun startRealTimeTracking() {
+        seekJob?.cancel()
+        seekJob = viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                loadDataForDate(selectedDate) // GỌI HÀM CŨ, NHƯNG CHỈ CHO NGÀY HIỆN TẠI
+                delay(3000)
+            }
+        }
+    }
+
+    private fun updateAppListFromTempMap() {
+        val launchableApps = getLaunchableApps() // Hàm lấy app có launcher
+        val appList = _tempUsageMap
+            .filter { (pkg, time) ->
+                time > 0 && launchableApps.contains(pkg) && !isSystemPackage(pkg)
+            }
+            .mapNotNull { (pkg, time) ->
+                try {
+                    val appInfo = packageManager.getApplicationInfo(pkg, 0)
+                    val name = packageManager.getApplicationLabel(appInfo).toString()
+                    val icon = packageManager.getApplicationIcon(appInfo)
+                    AppUsageData(pkg, name, icon, time)
+                } catch (e: Exception) { null }
+            }
+            .sortedByDescending { it.timeUsed }
+
+        val total = appList.sumOf { it.timeUsed }
+        _uiState.value = UsageStatisticUiState(
+            date = SimpleDateFormat("MMM dd, yyyy").format(selectedDate.time),
+            totalTime = formatDuration(total),
+            compareText = calculateCompareText(selectedDate, total),
+            appList = appList.map { it.copy(percentage = if (total > 0) (it.timeUsed * 100f / total) else 0f) }
+        )
+    }
+
+    // Cache để tránh query nhiều lần
+    private var launchableAppsCache: Set<String>? = null
+
+    private fun getLaunchableApps(): Set<String> {
+        if (launchableAppsCache != null) {
+            return launchableAppsCache!!
+        }
+
+        val mainIntent = Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        }
+
+        val launchableApps = packageManager.queryIntentActivities(mainIntent, 0)
+            .mapNotNull { it.activityInfo?.packageName }
+            .toSet()
+
+        launchableAppsCache = launchableApps
+        return launchableApps
+    }
+
+    private fun calculateCompareText(date: Calendar, todayTotal: Long): String {
+        // Lấy dữ liệu hôm qua
+        val yesterday = date.clone() as Calendar
+        yesterday.add(Calendar.DAY_OF_YEAR, -1)
+        val yesterdayStart =
+            yesterday.apply { set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0) }.timeInMillis
+        val yesterdayEnd =
+            yesterday.apply { set(Calendar.HOUR_OF_DAY, 23); set(Calendar.MINUTE, 59) }.timeInMillis
+
+        val yesterdayStats =
+            usageStatsManager.queryUsageStats(INTERVAL_DAILY, yesterdayStart, yesterdayEnd)
+                ?: return "No data from yesterday"
+
+        val yesterdayTotal = yesterdayStats.sumOf { it.totalTimeInForeground }
+
+        val diff = todayTotal - yesterdayTotal
+
+        return when {
+            diff > 0 -> "+${formatDuration(diff)} more than yesterday"
+            diff < 0 -> "${formatDuration(-diff)} less than yesterday"
+            else -> "Same as yesterday"
+        }
+    }
+
+    override fun onCleared() {
+        seekJob?.cancel()
+        super.onCleared()
+    }
+
 }
