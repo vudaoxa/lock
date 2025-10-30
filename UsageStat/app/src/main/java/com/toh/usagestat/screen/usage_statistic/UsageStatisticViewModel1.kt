@@ -31,10 +31,9 @@ import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class UsageStatisticViewModel @Inject constructor(
+class UsageStatisticViewModel1 @Inject constructor(
     private val usageStatsManager: UsageStatsManager,
-    private val packageManager: PackageManager,
-    //private val workManager: WorkManager
+    private val packageManager: PackageManager
 ) : ViewModel() {
 
     private val _uiState = MutableLiveData<UsageStatisticUiState>()
