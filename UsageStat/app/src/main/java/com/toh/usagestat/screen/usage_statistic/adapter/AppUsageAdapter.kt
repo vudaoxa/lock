@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.toh.usagestat.R
 import com.toh.usagestat.databinding.ItemAppUsageBinding
 import com.toh.usagestat.util.formatDuration
+import com.toh.usagestat.util.formatPercentage
 
 class AppUsageAdapter(
     private val onAppClick: (String) -> Unit
@@ -21,7 +22,8 @@ class AppUsageAdapter(
             binding.appIcon.setImageDrawable(item.appIcon)
             binding.appName.text = item.appName
             binding.timeUsed.text = formatDuration(item.timeUsed)
-            binding.percentage.text = "${item.percentage.toInt()}%"
+            //binding.percentage.text = "${item.percentage}%"
+            binding.percentage.text = formatPercentage(item.percentage)
             binding.moreThanYesterdayContainer.visibility = if (item.moreThanYesterday) {
                 binding.moreThanYesterdayText.text =
                     "${formatDuration(item.diffWithYesterday)} more than yesterday"

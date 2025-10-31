@@ -2,6 +2,37 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--<queries>-->
+    <!--    &lt;!&ndash; Cho phép app của anh truy vấn tất cả ứng dụng có Activity LAUNCHER &ndash;&gt;-->
+    <!--    <intent>-->
+    <!--        <action android:name="android.intent.action.MAIN" />-->
+    <!--        <category android:name="android.intent.category.LAUNCHER" />-->
+    <!--    </intent>-->
+
+    <!--    &lt;!&ndash; Thêm nếu anh muốn truy cập luôn app không có launcher (vd: AppLock, Service app) &ndash;&gt;-->
+    <!--    <intent>-->
+    <!--        <action android:name="android.intent.action.VIEW" />-->
+    <!--    </intent>-->
+    <!--</queries>-->
+
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.PACKAGE_ADDED" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.PACKAGE_REMOVED" />
+        </intent>
+    </queries>
+
+
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />

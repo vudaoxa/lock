@@ -45,6 +45,7 @@ class AppDetailFragment : Fragment() {
 
             binding.appIcon.setImageDrawable(icon)
             binding.appName.text = name
+            //binding.appName.text = packageName
         } catch (e: Exception) {
             binding.appName.text = "Unknown App"
         }

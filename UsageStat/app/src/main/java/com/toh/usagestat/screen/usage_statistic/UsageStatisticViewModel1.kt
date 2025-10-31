@@ -30,6 +30,7 @@ import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
+//grok -- bản này time bị nhảy lung tung
 @HiltViewModel
 class UsageStatisticViewModel1 @Inject constructor(
     private val usageStatsManager: UsageStatsManager,
@@ -161,7 +162,9 @@ class UsageStatisticViewModel1 @Inject constructor(
 
                     val packageName = event.packageName
                     val time = event.timeStamp
-
+                    //if (event.eventType == UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                    //    appUsageMap[packageName] = time // Bắt đầu
+                    //}
                     if (event.eventType == UsageEvents.Event.ACTIVITY_RESUMED) {
                         appUsageMap[packageName] = time // Bắt đầu
                     } else if (event.eventType == UsageEvents.Event.ACTIVITY_PAUSED) {

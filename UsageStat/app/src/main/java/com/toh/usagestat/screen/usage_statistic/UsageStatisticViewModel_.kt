@@ -25,8 +25,11 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+
+//31/10 morning
 @HiltViewModel
 class UsageStatisticViewModel_ @Inject constructor(
     private val usageStatsManager: UsageStatsManager,
@@ -216,10 +219,11 @@ class UsageStatisticViewModel_ @Inject constructor(
             // Lọc: chỉ lấy app có launcher + có thời gian sử dụng > 0
             val appList = stats
                 .filter { stat ->
-                    stat.totalTimeInForeground > 0 &&
-                            launchableApps.contains(stat.packageName) &&
+                    //stat.totalTimeInForeground > 0 &&
+                            //launchableApps.contains(stat.packageName) &&
                             !isSystemPackage(stat.packageName)
                 }
+                .distinctBy { it.packageName }
                 .mapNotNull { stat ->
                     try {
                         val appInfo = packageManager.getApplicationInfo(stat.packageName, 0)
